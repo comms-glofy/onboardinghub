@@ -557,36 +557,6 @@ body::before {
   letter-spacing: 0.01em;
 }
 
-/* ─── API banner ─── */
-.api-banner {
-  margin: 0 28px 12px;
-  padding: 10px 14px;
-  background: rgba(206,255,0,0.04);
-  border: 1px solid rgba(206,255,0,0.12);
-  border-radius: 9px;
-  font-size: 12px; font-weight: 500;
-  color: var(--text-muted);
-  display: flex; align-items: center; gap: 10px;
-  animation: slideDown 0.3s var(--ease);
-}
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.api-banner input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: var(--text); font-family: 'SF Mono', monospace;
-  font-size: 11.5px;
-}
-.api-banner input::placeholder { color: var(--text-subtle); }
-.api-toggle {
-  background: none; border: none;
-  color: var(--text-subtle); cursor: pointer;
-  font-family: var(--font); font-size: 11.5px; font-weight: 600;
-  padding: 3px 8px; border-radius: 5px;
-  transition: color 0.15s, background 0.15s; white-space: nowrap;
-}
-.api-toggle:hover { color: var(--lime); background: var(--lime-subtle); }
 
 /* ─── Divider ─── */
 .divider { height: 1px; background: var(--border); margin: 4px 0; }
@@ -703,13 +673,6 @@ body::before {
       </div>
     </div>
 
-    <div class="api-banner" id="api-banner">
-      <span style="color:var(--lime);flex-shrink:0;font-size:14px;">🔑</span>
-      <input type="password" id="api-key-input" placeholder="Pegá tu Anthropic API key para activar el asistente…" autocomplete="off"/>
-      <button class="api-toggle" id="api-save-btn" onclick="saveKey()">Guardar</button>
-      <button class="api-toggle" onclick="document.getElementById('api-banner').style.display='none'">✕</button>
-    </div>
-
     <div class="messages" id="messages">
       <div class="welcome" id="welcome-screen">
         <div class="welcome-glow">👋</div>
@@ -770,11 +733,8 @@ const TRANSLATIONS = {
     labelFaq: 'Preguntas frecuentes',
     contactTitle: 'Contacto People',
     statusLabel: 'Asistente en línea',
-    apiPlaceholder: 'Pegá tu Anthropic API key para activar el asistente…',
-    apiSave: 'Guardar',
     inputPlaceholder: 'Escribí tu pregunta acá…',
     inputHint: 'El asistente tiene acceso a la documentación oficial de Glofy. Para urgencias, contactá a People directamente.',
-    noApiKey: 'Para activar el asistente, pegá tu Anthropic API key en el campo de arriba.',
     errorMsg: (m) => `Algo salió mal: ${m}`,
     chips: [
       { label: 'Pagos y facturación',    sub: 'Cuándo y cómo me pagan',       q: '¿Cómo funciona el pago y la facturación en Glofy?' },
@@ -800,11 +760,8 @@ const TRANSLATIONS = {
     labelFaq: 'Quick questions',
     contactTitle: 'Contact People',
     statusLabel: 'Assistant online',
-    apiPlaceholder: 'Paste your Anthropic API key to activate the assistant…',
-    apiSave: 'Save',
     inputPlaceholder: 'Type your question here…',
     inputHint: 'The assistant has access to Glofy\'s official documentation. For urgent matters, contact People directly.',
-    noApiKey: 'To activate the assistant, paste your Anthropic API key in the field above.',
     errorMsg: (m) => `Something went wrong: ${m}`,
     chips: [
       { label: 'Payments & billing',    sub: 'When and how I get paid',       q: 'How does payment and billing work at Glofy?' },
@@ -947,13 +904,12 @@ LINKS: Glofy Hub: https://docs.glofy.co/glofyhub | Security Policy: https://docs
 
 // ── State ─────────────────────────────────────────────────────
 let history = [];
-let apiKey = localStorage.getItem('glofy_api_key') || '';
+// API key handled server-side via Netlify Function
 let lang = 'es';
 let T = TRANSLATIONS.es;
 
 // ── Init ──────────────────────────────────────────────────────
 function init() {
-  if (apiKey) document.getElementById('api-banner').style.display = 'none';
   document.querySelectorAll('.welcome-chip').forEach(chip => {
     chip.addEventListener('mousemove', e => {
       const r = chip.getBoundingClientRect();
@@ -1002,14 +958,6 @@ function setLang(l, btn) {
   });
 }
 
-// ── API key ───────────────────────────────────────────────────
-function saveKey() {
-  const k = document.getElementById('api-key-input').value.trim();
-  if (k) {
-    apiKey = k;
-    localStorage.setItem('glofy_api_key', k);
-    document.getElementById('api-banner').style.display = 'none';
-  }
 }
 
 // ── Input helpers ─────────────────────────────────────────────
@@ -1110,24 +1058,11 @@ async function sendMessageText(text) {
   appendMsg('user', text);
   history.push({ role: 'user', content: text });
   showTyping();
-
-  if (!apiKey) {
-    removeTyping();
-    appendMsg('assistant', T.noApiKey);
-    btn.disabled = false;
-    return;
-  }
-
   try {
     const sys = lang === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_ES;
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1024, system: sys, messages: history })
     });
     removeTyping();
