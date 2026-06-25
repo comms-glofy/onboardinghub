@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glofy Hub — Onboarding Assistant</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --lime: #ceff00;
+  --lime-dim: #aad900;
+  --lime-glow: rgba(206,255,0,0.18);
+  --lime-subtle: rgba(206,255,0,0.06);
+  --bg: #080a0f;
+  --surface: #0f1219;
+  --surface2: #161b26;
+  --surface3: #1e2535;
+  --border: rgba(255,255,255,0.07);
+  --border-mid: rgba(255,255,255,0.12);
+  --border-lime: rgba(206,255,0,0.25);
+  --text: #eef0f5;
+  --text-muted: #7e8494;
+  --text-subtle: #434856;
+  --font: 'Montserrat', sans-serif;
+  --sidebar-w: 290px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Noise + grid background ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 10% 0%, rgba(206,255,0,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 60% at 90% 100%, rgba(206,255,0,0.03) 0%, transparent 70%),
+    linear-gradient(rgba(206,255,0,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(206,255,0,0.018) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 52px 52px, 52px 52px;
+  pointer-events: none;
+}
+
+/* ─── Layout ─── */
+.layout {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(15,18,25,0.97) 0%, rgba(10,13,20,0.97) 100%);
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0;
+  position: relative;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px 16px 24px;
+  flex: 1;
+}
+
+/* Logo */
+.logo-area {
+  padding: 6px 8px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.logo-img { height: 28px; width: auto; display: block; filter: brightness(1.05); }
+
+/* Section labels */
+.section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  padding: 16px 10px 6px;
+}
+
+/* Nav links */
+.doc-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), transform 0.15s var(--ease);
+  position: relative;
+}
+.doc-link:hover {
+  background: var(--surface2);
+  color: var(--text);
+  transform: translateX(2px);
+}
+.doc-link::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 2px; height: 60%;
+  background: var(--lime);
+  border-radius: 2px;
+  transition: transform 0.2s var(--ease);
+}
+.doc-link:hover::before { transform: translateY(-50%) scaleY(1); }
+
+.doc-icon-wrap {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: background 0.18s, border-color 0.18s;
+}
+.doc-link:hover .doc-icon-wrap {
+  background: var(--surface3);
+  border-color: var(--border-lime);
+}
+
+/* Quick chips */
+.quick-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease), background 0.18s var(--ease), transform 0.15s var(--ease);
+}
+.quick-chip:hover {
+  border-color: var(--border-lime);
+  color: var(--lime);
+  background: var(--lime-subtle);
+  transform: translateX(2px);
+}
+.chip-arrow {
+  margin-left: auto;
+  opacity: 0;
+  font-size: 10px;
+  transition: opacity 0.15s, transform 0.15s;
+  color: var(--lime);
+}
+.quick-chip:hover .chip-arrow { opacity: 1; transform: translateX(2px); }
+
+/* Contact block */
+.contact-block {
+  margin-top: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.contact-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+}
+.contact-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.contact-row:last-child { margin-bottom: 0; }
+.contact-row a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.contact-row a:hover { color: var(--lime); }
+.contact-dot {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.cd-people { background: rgba(206,255,0,0.1); }
+.cd-security { background: rgba(255,100,100,0.1); }
+.cd-ref { background: rgba(100,180,255,0.1); }
+
+/* Status */
+.status-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 500;
+  color: var(--text-subtle);
+  padding: 14px 10px 0;
+}
+.pulse {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #3ecf8e;
+  position: relative; flex-shrink: 0;
+}
+.pulse::after {
+  content: '';
+  position: absolute; inset: -3px;
+  border-radius: 50%;
+  background: rgba(62,207,142,0.3);
+  animation: pulseRing 2s ease-in-out infinite;
+}
+@keyframes pulseRing {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ─── Chat area ─── */
+.chat-area {
+  display: flex; flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+}
+
+/* Header */
+.chat-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,10,15,0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+.header-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(206,255,0,0.25), rgba(206,255,0,0.05));
+  border: 1px solid var(--border-lime);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  position: relative;
+}
+.header-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -3px; border-radius: 50%;
+  border: 1px solid rgba(206,255,0,0.1);
+  animation: rotateRing 6s linear infinite;
+}
+@keyframes rotateRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.header-info { flex: 1; }
+.header-info h2 {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.2px; color: var(--text);
+}
+.header-info p {
+  font-size: 11.5px; font-weight: 400;
+  color: var(--text-subtle); margin-top: 1px;
+}
+.header-badge {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  background: var(--lime-subtle);
+  border: 1px solid var(--border-lime);
+  border-radius: 20px;
+  color: var(--lime);
+  text-transform: uppercase;
+}
+
+/* Language toggle */
+.lang-toggle {
+  display: flex; gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+.lang-btn {
+  padding: 4px 10px; border-radius: 6px;
+  border: none; background: none;
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  color: var(--text-subtle); cursor: pointer;
+  transition: all 0.2s var(--ease);
+  letter-spacing: 0.04em;
+}
+.lang-btn.active {
+  background: var(--lime);
+  color: #080a0f;
+}
+
+/* Messages */
+.messages {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 32px 28px 20px;
+  display: flex; flex-direction: column;
+  gap: 22px;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 3px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+/* Message rows */
+.msg {
+  display: flex; gap: 12px;
+  animation: msgIn 0.3s var(--ease) both;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg.user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+  max-width: 75%;
+}
+.msg.assistant { max-width: 82%; }
+
+.msg-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.msg.assistant .msg-avatar {
+  background: radial-gradient(circle at 35% 35%, rgba(206,255,0,0.2), rgba(206,255,0,0.04));
+  border: 1px solid rgba(206,255,0,0.2);
+}
+.msg.user .msg-avatar {
+  background: var(--surface3);
+  border: 1px solid var(--border-mid);
+  font-size: 9px; font-weight: 700;
+  color: var(--text-subtle); letter-spacing: 0.05em;
+}
+
+/* Bubbles */
+.msg-bubble {
+  padding: 13px 17px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+.msg.assistant .msg-bubble {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0px 16px 16px 16px;
+  color: var(--text);
+  position: relative;
+}
+.msg.assistant .msg-bubble::before {
+  content: '';
+  position: absolute; top: 0; left: -1px;
+  width: 2px; height: 40px;
+  background: linear-gradient(to bottom, var(--lime), transparent);
+  border-radius: 2px;
+}
+.msg.user .msg-bubble {
+  background: linear-gradient(135deg, rgba(206,255,0,0.12), rgba(206,255,0,0.06));
+  border: 1px solid rgba(206,255,0,0.2);
+  border-radius: 16px 0px 16px 16px;
+  color: var(--text);
+}
+.msg-bubble p { margin-bottom: 9px; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble ul, .msg-bubble ol { padding-left: 20px; margin-bottom: 9px; }
+.msg-bubble li { margin-bottom: 4px; }
+.msg-bubble strong { color: var(--lime); font-weight: 600; }
+.msg-bubble a { color: var(--lime); text-decoration: underline; text-underline-offset: 3px; transition: opacity 0.15s; }
+.msg-bubble a:hover { opacity: 0.8; }
+.msg-bubble code {
+  background: rgba(206,255,0,0.08);
+  border: 1px solid rgba(206,255,0,0.15);
+  padding: 1px 6px; border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  font-size: 11.5px; color: var(--lime);
+}
+
+/* Typing indicator */
+.typing-wrap { display: flex; gap: 12px; animation: msgIn 0.3s var(--ease) both; }
+.typing-indicator {
+  display: flex; align-items: center; gap: 5px;
+  padding: 13px 17px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0px 16px 16px 16px;
+}
+.typing-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-subtle);
+  animation: typingBounce 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ─── Welcome screen ─── */
+.welcome {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; flex: 1;
+  padding: 48px 40px;
+  gap: 12px;
+}
+.welcome-glow {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: radial-gradient(circle at 40% 35%, rgba(206,255,0,0.2), rgba(206,255,0,0.04));
+  border: 1px solid rgba(206,255,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin-bottom: 8px;
+  position: relative;
+  animation: floatIcon 4s ease-in-out infinite;
+}
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.welcome-glow::after {
+  content: '';
+  position: absolute; inset: -12px;
+  border-radius: 28px;
+  border: 1px solid rgba(206,255,0,0.08);
+  animation: floatIcon 4s ease-in-out infinite reverse;
+}
+.welcome h1 {
+  font-size: 24px; font-weight: 700;
+  letter-spacing: -0.5px; color: var(--text);
+  margin-top: 4px;
+}
+.welcome p {
+  font-size: 13.5px; font-weight: 400;
+  color: var(--text-muted);
+  max-width: 400px; line-height: 1.75;
+}
+.welcome-chips {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 16px;
+  max-width: 560px; width: 100%;
+}
+.welcome-chip {
+  padding: 15px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--font); font-size: 12.5px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; text-align: left;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease),
+              background 0.2s var(--ease), transform 0.2s var(--ease);
+  line-height: 1.45;
+  position: relative; overflow: hidden;
+}
+.welcome-chip::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(206,255,0,0.06) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.welcome-chip:hover::before { opacity: 1; }
+.welcome-chip:hover {
+  border-color: var(--border-lime);
+  color: var(--text);
+  background: var(--surface2);
+  transform: translateY(-2px);
+}
+.chip-icon { display: block; font-size: 20px; margin-bottom: 7px; }
+.chip-label { font-size: 12px; font-weight: 600; display: block; }
+.chip-sub { font-size: 11px; font-weight: 400; color: var(--text-subtle); display: block; margin-top: 2px; }
+.welcome-chip:hover .chip-sub { color: var(--text-muted); }
+
+/* ─── Input bar ─── */
+.input-section {
+  padding: 14px 28px 20px;
+  border-top: 1px solid var(--border);
+  background: rgba(8,10,15,0.6);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+.input-wrap {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.input-wrap:focus-within {
+  border-color: rgba(206,255,0,0.4);
+  box-shadow: 0 0 0 3px rgba(206,255,0,0.06);
+}
+#user-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: var(--font);
+  font-size: 13.5px; font-weight: 400;
+  line-height: 1.55; resize: none;
+  max-height: 130px; overflow-y: auto;
+}
+#user-input::placeholder { color: var(--text-subtle); }
+#send-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--lime); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 12px rgba(206,255,0,0.3);
+}
+#send-btn:hover {
+  background: var(--lime-dim);
+  box-shadow: 0 4px 20px rgba(206,255,0,0.45);
+  transform: scale(1.04);
+}
+#send-btn:active { transform: scale(0.96); }
+#send-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; transform: none; }
+#send-btn svg { width: 15px; height: 15px; }
+
+.input-hint {
+  font-size: 10.5px; font-weight: 400;
+  color: var(--text-subtle);
+  margin-top: 9px; padding: 0 2px;
+  letter-spacing: 0.01em;
+}
+
+/* ─── API banner ─── */
+.api-banner {
+  margin: 0 28px 12px;
+  padding: 10px 14px;
+  background: rgba(206,255,0,0.04);
+  border: 1px solid rgba(206,255,0,0.12);
+  border-radius: 9px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-muted);
+  display: flex; align-items: center; gap: 10px;
+  animation: slideDown 0.3s var(--ease);
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.api-banner input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'SF Mono', monospace;
+  font-size: 11.5px;
+}
+.api-banner input::placeholder { color: var(--text-subtle); }
+.api-toggle {
+  background: none; border: none;
+  color: var(--text-subtle); cursor: pointer;
+  font-family: var(--font); font-size: 11.5px; font-weight: 600;
+  padding: 3px 8px; border-radius: 5px;
+  transition: color 0.15s, background 0.15s; white-space: nowrap;
+}
+.api-toggle:hover { color: var(--lime); background: var(--lime-subtle); }
+
+/* ─── Divider ─── */
+.divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* ─── Responsive ─── */
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .welcome-chips { grid-template-columns: 1fr; }
+  .messages { padding: 20px 16px; }
+  .input-section { padding: 10px 16px 16px; }
+  .chat-header { padding: 14px 16px; }
+  .header-badge { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ─── Sidebar ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <div class="logo-area">
+        <img src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png"
+             alt="Glofy" class="logo-img"
+             onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
+        <div id="logo-fallback" style="display:none; align-items:center; gap:8px;">
+          <div style="width:28px;height:28px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 18 18" fill="none" width="14"><path d="M6 9l2.5 2.5L13 6.5" stroke="#080a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span style="font-size:15px;font-weight:700;color:var(--text)">Glofy</span>
+        </div>
+      </div>
+
+      <div class="section-label" id="label-docs">Documentación</div>
+
+      <a class="doc-link" href="https://docs.glofy.co/glofyhub" target="_blank">
+        <span class="doc-icon-wrap">🏠</span> <span class="doc-link-label" data-es="Glofy Hub" data-en="Glofy Hub">Glofy Hub</span>
+      </a>
+      <a class="doc-link" href="https://docs.glofy.co/welcomecall" target="_blank">
+        <span class="doc-icon-wrap">📞</span> <span class="doc-link-label" data-es="Welcome Call" data-en="Welcome Call">Welcome Call</span>
+      </a>
+      <a class="doc-link" href="https://docs.glofy.co/manual" target="_blank">
+        <span class="doc-icon-wrap">📋</span> <span class="doc-link-label" data-es="Manual PyP" data-en="Policies Manual">Manual PyP</span>
+      </a>
+      <a class="doc-link" href="https://docs.glofy.co/how-works" target="_blank">
+        <span class="doc-icon-wrap">⚙️</span> <span class="doc-link-label" data-es="Así trabajamos en Glofy" data-en="How Glofy Works">How Glofy Works</span>
+      </a>
+      <a class="doc-link" href="https://docs.glofy.co/politicadeseguridad" target="_blank">
+        <span class="doc-icon-wrap">🔒</span> <span class="doc-link-label" data-es="Política de Seguridad" data-en="Security Policy">Política de Seguridad</span>
+      </a>
+
+
+      <div class="divider"></div>
+      <div class="section-label" id="label-faq">Preguntas frecuentes</div>
+
+      <button class="quick-chip" id="qchip-0" onclick="sendQuick(T.qchips[0].q)">
+        💰 <span id="qchip-0-label">¿Cuándo y cómo me pagan?</span> <span class="chip-arrow">→</span>
+      </button>
+      <button class="quick-chip" id="qchip-1" onclick="sendQuick(T.qchips[1].q)">
+        ⏱️ <span id="qchip-1-label">¿Cómo uso el Timetracker?</span> <span class="chip-arrow">→</span>
+      </button>
+      <button class="quick-chip" id="qchip-2" onclick="sendQuick(T.qchips[2].q)">
+        📅 <span id="qchip-2-label">¿Cómo pido un day off?</span> <span class="chip-arrow">→</span>
+      </button>
+      <button class="quick-chip" id="qchip-3" onclick="sendQuick(T.qchips[3].q)">
+        🛠️ <span id="qchip-3-label">Problemas con el equipo</span> <span class="chip-arrow">→</span>
+      </button>
+      <button class="quick-chip" id="qchip-4" onclick="sendQuick(T.qchips[4].q)">
+        🎁 <span id="qchip-4-label">¿Qué beneficios tengo?</span> <span class="chip-arrow">→</span>
+      </button>
+      <button class="quick-chip" id="qchip-5" onclick="sendQuick(T.qchips[5].q)">
+        🔗 <span id="qchip-5-label">LinkedIn y branding</span> <span class="chip-arrow">→</span>
+      </button>
+
+      <div class="contact-block">
+        <div class="contact-title" id="contact-title">Contacto People</div>
+        <div class="contact-row">
+          <span class="contact-dot cd-people">📧</span>
+          <a href="mailto:rrhh@glofy.co">rrhh@glofy.co</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-dot cd-people">💬</span>
+          <a href="https://wa.me/5493416524523" target="_blank">+54 9 341 652-4523</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-dot cd-security">🔒</span>
+          <a href="mailto:security@glofy.co">security@glofy.co</a>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <span class="pulse"></span>
+        <span id="status-label">Asistente en línea</span>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ─── Chat ─── -->
+  <main class="chat-area">
+
+    <div class="chat-header">
+      <div class="header-avatar">🤖</div>
+      <div class="header-info">
+        <h2 id="header-title">Asistente de Onboarding</h2>
+        <p id="header-sub">Preguntame cualquier cosa sobre tus primeras semanas como Glofer</p>
+      </div>
+      <span class="header-badge">Beta</span>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('es',this)">ES</button>
+        <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+      </div>
+    </div>
+
+    <div class="api-banner" id="api-banner">
+      <span style="color:var(--lime);flex-shrink:0;font-size:14px;">🔑</span>
+      <input type="password" id="api-key-input" placeholder="Pegá tu Anthropic API key para activar el asistente…" autocomplete="off"/>
+      <button class="api-toggle" id="api-save-btn" onclick="saveKey()">Guardar</button>
+      <button class="api-toggle" onclick="document.getElementById('api-banner').style.display='none'">✕</button>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome-screen">
+        <div class="welcome-glow">👋</div>
+        <h1 id="welcome-title">¡Bienvenido/a a Glofy!</h1>
+        <p id="welcome-desc">Soy tu asistente de onboarding. Estoy acá para ayudarte a navegar tus primeras semanas: políticas, herramientas, procesos y cualquier duda del día a día.</p>
+        <div class="welcome-chips">
+          <button class="welcome-chip" id="chip-0" onclick="sendWelcome(T.chips[0].q)">
+            <span class="chip-icon">💸</span>
+            <span class="chip-label" id="chip-0-label">Pagos y facturación</span>
+            <span class="chip-sub" id="chip-0-sub">Cuándo y cómo me pagan</span>
+          </button>
+          <button class="welcome-chip" id="chip-1" onclick="sendWelcome(T.chips[1].q)">
+            <span class="chip-icon">🔐</span>
+            <span class="chip-label" id="chip-1-label">Seguridad y dispositivos</span>
+            <span class="chip-sub" id="chip-1-sub">Políticas y buenas prácticas</span>
+          </button>
+          <button class="welcome-chip" id="chip-2" onclick="sendWelcome(T.chips[2].q)">
+            <span class="chip-icon">📅</span>
+            <span class="chip-label" id="chip-2-label">Timetracker y jornada</span>
+            <span class="chip-sub" id="chip-2-sub">Cómo registrar mis horas</span>
+          </button>
+          <button class="welcome-chip" id="chip-3" onclick="sendWelcome(T.chips[3].q)">
+            <span class="chip-icon">🚀</span>
+            <span class="chip-label" id="chip-3-label">Checklist del primer día</span>
+            <span class="chip-sub" id="chip-3-sub">Qué hacer al arrancar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <div class="input-wrap">
+        <textarea id="user-input" rows="1"
+          placeholder="Escribí tu pregunta acá…"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"></textarea>
+        <button id="send-btn" onclick="sendMessage()" title="Enviar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#080a0f" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+      </div>
+      <p class="input-hint" id="input-hint">El asistente tiene acceso a la documentación oficial de Glofy. Para urgencias, contactá a People directamente.</p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Translations ──────────────────────────────────────────────
+const TRANSLATIONS = {
+  es: {
+    headerTitle: 'Asistente de Onboarding',
+    headerSub: 'Preguntame cualquier cosa sobre tus primeras semanas como Glofer',
+    welcomeTitle: '¡Bienvenido/a a Glofy!',
+    welcomeDesc: 'Soy tu asistente de onboarding. Estoy acá para ayudarte a navegar tus primeras semanas: políticas, herramientas, procesos y cualquier duda del día a día.',
+    labelDocs: 'Documentación',
+    labelFaq: 'Preguntas frecuentes',
+    contactTitle: 'Contacto People',
+    statusLabel: 'Asistente en línea',
+    apiPlaceholder: 'Pegá tu Anthropic API key para activar el asistente…',
+    apiSave: 'Guardar',
+    inputPlaceholder: 'Escribí tu pregunta acá…',
+    inputHint: 'El asistente tiene acceso a la documentación oficial de Glofy. Para urgencias, contactá a People directamente.',
+    noApiKey: 'Para activar el asistente, pegá tu Anthropic API key en el campo de arriba.',
+    errorMsg: (m) => `Algo salió mal: ${m}`,
+    chips: [
+      { label: 'Pagos y facturación',    sub: 'Cuándo y cómo me pagan',       q: '¿Cómo funciona el pago y la facturación en Glofy?' },
+      { label: 'Seguridad y dispositivos', sub: 'Políticas y buenas prácticas', q: '¿Cuáles son las políticas de seguridad y uso de dispositivos?' },
+      { label: 'Timetracker y jornada',  sub: 'Cómo registrar mis horas',      q: '¿Cómo funciona el timetracker y cómo registro mi jornada?' },
+      { label: 'Checklist del primer día', sub: 'Qué hacer al arrancar',        q: '¿Cuál es el checklist del primer día como Glofer?' },
+    ],
+    qchips: [
+      { label: '¿Cuándo y cómo me pagan?',     q: '¿Cuándo y cómo me pagan?' },
+      { label: '¿Cómo uso el Timetracker?',    q: '¿Cómo registro mis horas en el Timetracker?' },
+      { label: '¿Cómo pido un day off?',       q: '¿Cómo pido un día libre o day off?' },
+      { label: 'Problemas con el equipo',      q: '¿Qué hago si tengo un problema con mi equipo o un incidente de seguridad?' },
+      { label: '¿Qué beneficios tengo?',       q: '¿Qué beneficios tengo como Glofer?' },
+      { label: 'LinkedIn y branding',          q: '¿Cómo debo poner mi perfil de LinkedIn?' },
+    ],
+  },
+  en: {
+    headerTitle: 'Onboarding Assistant',
+    headerSub: 'Ask me anything about your first weeks as a Glofer',
+    welcomeTitle: 'Welcome to Glofy!',
+    welcomeDesc: 'I\'m your onboarding assistant. I\'m here to help you navigate your first weeks: policies, tools, processes and any day-to-day questions you might have.',
+    labelDocs: 'Documentation',
+    labelFaq: 'Quick questions',
+    contactTitle: 'Contact People',
+    statusLabel: 'Assistant online',
+    apiPlaceholder: 'Paste your Anthropic API key to activate the assistant…',
+    apiSave: 'Save',
+    inputPlaceholder: 'Type your question here…',
+    inputHint: 'The assistant has access to Glofy\'s official documentation. For urgent matters, contact People directly.',
+    noApiKey: 'To activate the assistant, paste your Anthropic API key in the field above.',
+    errorMsg: (m) => `Something went wrong: ${m}`,
+    chips: [
+      { label: 'Payments & billing',    sub: 'When and how I get paid',       q: 'How does payment and billing work at Glofy?' },
+      { label: 'Security & devices',    sub: 'Policies and best practices',    q: 'What are the security and device usage policies?' },
+      { label: 'Timetracker & schedule', sub: 'How to log my hours',          q: 'How does the timetracker work and how do I log my hours?' },
+      { label: 'First day checklist',   sub: 'What to do when starting',       q: 'What is the checklist for my first day as a Glofer?' },
+    ],
+    qchips: [
+      { label: 'When and how do I get paid?', q: 'When and how do I get paid?' },
+      { label: 'How do I use the Timetracker?', q: 'How do I log my hours in the Timetracker?' },
+      { label: 'How do I request a day off?',  q: 'How do I request a day off or PTO?' },
+      { label: 'Equipment issues',             q: 'What do I do if I have a problem with my equipment or a security incident?' },
+      { label: 'What benefits do I have?',     q: 'What benefits do I have as a Glofer?' },
+      { label: 'LinkedIn and branding',        q: 'How should I set up my LinkedIn profile?' },
+    ],
+  },
+};
+
+// ── System prompts ────────────────────────────────────────────
+const SYSTEM_PROMPT_ES = `Sos el Asistente de Onboarding de Glofy — una guía amigable, directa y confiable para los nuevos Glofers (profesionales tech remotos asignados por Glofy a empresas globales).
+
+Tu rol es responder preguntas sobre políticas, procedimientos, herramientas y la vida laboral en Glofy, usando la base de conocimiento que tenés a continuación. Tu tono es el de un colega senior experimentado: profesional pero cercano, sin ser un bot de RRHH frío.
+
+REGLAS:
+- Respondé siempre en español.
+- Si no sabés algo específico, decilo y derivá al equipo de People (rrhh@glofy.co | WhatsApp: +54 9 341 652-4523).
+- No inventes datos específicos que no estén en tu base de conocimiento.
+- Usá párrafos cortos y listas cuando la respuesta lo requiera.
+- Cuando cites documentación, incluí el link: [texto](url).
+- Nunca empeces con frases de relleno como "Gran pregunta".
+- No uses guiones largos (—) en tus respuestas; usá dos puntos o coma en su lugar.
+
+BASE DE CONOCIMIENTO GLOFY:
+
+BIENVENIDA: En Glofy, cada persona del equipo es clave para ofrecer un servicio de calidad. Valoramos el compromiso, la responsabilidad y la colaboración. La adaptabilidad, la empatía y la transparencia nos guían todos los días.
+
+JORNADA LABORAL: La jornada es de lunes a viernes, 8 horas si es full time o 4 horas si es part time, especificado en la carta de oferta y contrato. El horario de inicio y fin se acuerda con Glofy al arrancar la asignación. Si necesitás hacer una pausa o cambiar algo, comunicalo a People y al responsable del cliente con anticipación. Si bien el contrato es en rate por hora, el esquema es por jornada completa o part time con disponibilidad plena durante ese tiempo.
+
+AUSENCIAS DURANTE LA JORNADA: En caso de imprevisto, avisar al cliente y a People de inmediato. Registrar la interrupción en el timetracker. Si es mayor a 30 minutos, coordinar la recuperación con el referente o el cliente y dar aviso a Glofy vía email adjuntando captura de la aprobación del cliente.
+
+HORAS EXTRAS: Solo si fueron aprobadas por el cliente y notificadas a Glofy con documentación. Para que sean reconocidas: 1) avisar por mail a rrhh@glofy.co con la aprobación del cliente, 2) registrarlas en GlofyHR con el detalle "Horas extra realizadas: (cantidad)". Si no se hace, no serán contempladas ni abonadas.
+
+RECUPERO DE HORAS: Se espera predisposición para recuperarlas si fue una ausencia autorizada (dentro del mismo mes). Notificar a RRHH y coordinar con el referente del cliente. Solo se pagan las horas efectivamente trabajadas dentro del mes.
+
+PROBLEMAS TECNICOS: Falta de internet, corte de luz o problemas con el equipo deben informarse de inmediato a People y al cliente. Se puede recuperar el tiempo, pero primero hay que consultar y validar con ambas partes.
+
+TIMETRACKER: Usar el Timetracker dentro de GlofyHR para registrar horas. Cargar todas las tareas del día en un solo bloque antes del viernes. Agendar reminder para el último día hábil del mes. Si los registros no coinciden con los del cliente, Glofy puede pedir el timetracker del cliente para validar. Es fundamental que ambos coincidan.
+
+ACOMPAÑAMIENTO: Las 1:1 meetings son espacios semanales con People para acompañar objetivos y experiencia laboral. Son dentro de la jornada y la participación es obligatoria. Solo se reprograman por fuerza mayor, carga crítica o solicitud del cliente. Avisar con anticipación si no se puede asistir.
+
+DAY OFF (días no remunerados): 1) Pedir con al menos 15 días de anticipación a rrhh@glofy.co. 2) Esperar la pre-aprobación de Glofy. 3) Reenviar el pedido al cliente copiando a People Glofy. 4) Cuando el cliente apruebe, reenviar el mail o captura a rrhh@glofy.co. Se otorgan a partir de los 3 meses en la asignación, salvo que hayan sido informados durante el proceso de selección por email.
+
+FERIADOS: Se respeta el calendario del país del cliente. El listado de festivos aplicables está en GlofyHR, sección "Documentos". Si se acuerda algo diferente con el cliente, informar a People de inmediato.
+
+ENFERMEDAD: Hasta 5 días hábiles al año pagos. Avisar a People y al cliente apenas se sienta mal. Mantener informados sobre la evolución. Enviar certificado médico a rrhh@glofy.co dentro de las 48 horas hábiles posteriores a la reincorporación.
+
+PTOs (vacaciones pagas): Disponibles después de cumplir un año en Glofy. Vigencia de 1 año desde su habilitación, no acumulables, se renuevan año a año. Solicitar por correo a People con al menos 15 días de anticipación, indicando cuántos días se van a usar. Deben ser aprobados por Glofy y el cliente. Para saber cuántos PTOs disponibles quedan, consultar a People.
+
+PAGOS: Según el cronograma habitual de Glofy especificado en el Acuerdo de Prestación de Servicios, considerando los feriados nacionales de Argentina que pueden alterar las fechas de acreditación. Para cambiar medio de cobro: enviar mail a rrhh@glofy.co con asunto "Cambio de Billetera virtual / Cuenta de cobro - [Nombre y apellido]". Para pagos en USD se recomienda Wise, Payoneer o similares. Para quienes necesiten justificar ingresos en Brasil, existe la opción de emitir factura de exportación de servicios a Glofy (consultar situación impositiva con contador local).
+
+BENEFICIOS (activos desde el primer día, algunos requieren activación por email): Wellness a través de Wellhub o bonus equivalente. Descuentos en Bonda. Health Bonus mensual. Capacitaciones 100% bonificadas si las solicita el cliente. Programa de Referidos: si se recomienda a alguien y permanece un mes, hay premio; enviar CV y LinkedIn a referidos@glofy.co con copia a recruitment@glofy.co, asunto "Referido + Tu nombre". Kit de bienvenida enviado a domicilio al ingresar. Vacantes activas publicadas semanalmente en Instagram.
+
+LINKEDIN Y BRANDING: El empleador en LinkedIn debe ser Glofy, no el cliente. La relación contractual es con Glofy, no con el cliente. Se puede mencionar al cliente en la descripción: "Actualmente participo en un proyecto de [nombre del cliente] a través de Glofy, desempeñándome como [rol]" o "Asignado/a en [nombre del cliente] a través de Glofy, desempeñando funciones de [rol/proyecto]". No cumplir puede derivar en llamados de atención y ajustes obligatorios. Glofy tiene un Branding Kit con fondos de escritorio, fondo para videollamadas y banner de LinkedIn. Consultas sobre LinkedIn: rrhh@glofy.co.
+
+ISSUES EN GLOFYHR: Reportar cuando haya errores de funcionamiento, información que no se guarda, accesos que fallan, pantallas en blanco, lentitud o comportamiento inesperado. Mail a rrhh@glofy.co con asunto "ISSUE GLOFYHR - [Nombre y Apellido]". Incluir: descripción breve del problema, fecha y hora aproximadas, frecuencia, pasos para reproducir el error, capturas de pantalla o video, navegador y versión, sistema operativo. Urgencia al final: Alta (bloquea trabajo o plazos inmediatos) / Media (afecta tareas pero hay alternativa) / Baja (mejora sin impacto inmediato). Antes de reportar intentar: Ctrl+F5, ventana incógnito, limpiar caché, otro navegador. Preferir un mail por issue; si están relacionados, agrupar y enumerar. No incluir contraseñas ni datos sensibles en las capturas.
+
+ACTUALIZACION DE DATOS PERSONALES: Informar de inmediato si cambian: domicilio, cédula de identidad, teléfono personal, email personal. Enviar mail a rrhh@glofy.co solicitando el formulario de actualización. Si se cambia de locación temporal (viaje, estadía en otra ciudad/país), informar con antelación al cliente y a People para evaluar accesos, huso horario, compliance, aspectos fiscales, etc. La actualización tarda 2-3 días hábiles. Se recibe confirmación por mail.
+
+CONDUCTA Y SANCIONES: El Código de Conducta aplica a todos los Glofers sin importar modalidad ni ubicación. Normas básicas: respetar a todas las personas, mantener confidencialidad, usar recursos responsablemente, actuar con buena fe, profesionalismo y ética. Sanciones según gravedad: apercibimiento verbal o escrito, suspensión, desvinculación con justa causa. Se puede cuestionar una sanción en 30 días corridos desde la notificación. Faltas graves: divulgar información confidencial sin autorización, manipular o alterar registros, abusar de la confianza o incumplir la buena fe contractual.
+
+SEGURIDAD (ISO/IEC 27001:2022): Usar siempre canales seguros (VPN, HTTPS, correo corporativo). Solo software autorizado y actualizado. No usar cuentas personales para fines laborales. Documentar y reportar incidentes. No transferir información por canales no autorizados (WhatsApp personal, correo personal). Wi-Fi público: solo con VPN corporativa activa. Escritorio limpio: no dejar documentos o sesiones abiertas a la vista de terceros. Cifrado de disco y bloqueo automático de pantalla activos. No guardar información confidencial en la notebook personal salvo autorización expresa. Actualizaciones del sistema operativo y software de seguridad deben permitirse automáticamente.
+
+INCIDENTES DE SEGURIDAD: Reportar de inmediato a security@glofy.co situaciones como: pérdida o robo del equipo, sospecha de acceso no autorizado, exposición de información sensible frente a terceros, desbloqueo forzado del equipo, envío accidental de archivos confidenciales a destinatarios equivocados, comportamiento anómalo. Asunto: "Soporte Tecnico - [Tu Nombre]". Incluir descripción, fecha/hora, contexto, captura. Los reportes se tratan con absoluta reserva, no habrá sanciones por reportar de buena fe.
+
+INCIDENTES TECNICOS (equipos Glofy): Fallas de hardware, errores de software recurrentes, daño físico accidental, equipo que no enciende. Reportar a security@glofy.co con el mismo formato. No está permitido reparar ni modificar el equipo por cuenta propia sin autorización previa del área técnica.
+
+TELETRABAJO: Acceder siempre con credenciales corporativas, prohibido compartirlas. Escritorio limpio y pantalla limpia: no dejar archivos sensibles o sesiones abiertas. Wi-Fi público solo con VPN. Permitir actualizaciones automáticas del sistema. Transportar la notebook en mochilas o fundas adecuadas. No dejar equipos sin supervisión en espacios públicos. Medidas de seguridad obligatorias: cifrado de disco y bloqueo automático de pantalla.
+
+EQUIPOS GLOFY (comodato, solo para quienes recibieron equipo de Glofy): Confirmar recepción por correo. Guardar todos los componentes de empaque para posible devolución. Iniciar el equipo con un usuario nuevo de Office/Apple/SO exclusivo para uso laboral. Prohibido: configurar con cuentas personales, instalar software no autorizado, prestar a terceros sin aprobación de Glofy. Activar contraseña segura y autenticación de dos factores. Robo o pérdida: notificar de inmediato a rrhh@glofy.co o WhatsApp. No modificar ni reparar sin autorización. Reporte de fallas: mail a security@glofy.co, asunto "Soporte Tecnico - [Tu Nombre]". Antes de devolver el equipo: eliminar documentos y carpetas locales vinculados al cliente, archivos temporales, historial y caché del navegador, contraseñas guardadas, correos y calendarios sincronizados, aplicaciones laborales con información sensible. Usar borrado permanente o herramientas indicadas por el área técnica.
+
+USO DE ACTIVOS PROPIOS (BYOD): Acceso a Google Drive, GlofyHR y correo corporativo limitado a personal autorizado. Credenciales individuales, prohibido compartirlas. Prohibido descargar información confidencial a dispositivos no autorizados. Prohibido almacenar, compartir o procesar información confidencial fuera de plataformas autorizadas. Wi-Fi público prohibido sin VPN. Incumplimiento puede derivar en revocación de accesos, penalizaciones contractuales o acciones legales.
+
+USO DE CORREO Y GLOFYHR: El correo corporativo es exclusivamente para fines laborales. Prohibido enviar material inapropiado. No intercambiar contraseñas ni información confidencial por mail sin cifrado. Estar alerta a correos sospechosos, no hacer clic en links ni descargar adjuntos de remitentes desconocidos. En GlofyHR, los Glofers no tienen permisos de carga directa; la validación y registro lo hace el equipo interno de Glofy.
+
+MODELO DE CONTRATACION (Staff Augmentation): Proveedor de servicios independiente. La compensación se define por rate por hora y carga mensual. El monto puede variar según horas trabajadas, ausencias no remuneradas y feriados del cliente. Glofy actúa como socio de People, RRHH y operaciones durante toda la asignación. El trabajo del día a día es directamente con el cliente: integrado a su equipo, con sus herramientas, procesos y metodologías, en su huso horario. Glofy se mantiene involucrado para asegurar alineación y apoyo a ambas partes.
+
+ONBOARDING (5 pasos): 1) Oferta formal con condiciones de la asignación. 2) Firma digital y documentación: firma de documentos y datos personales para el contrato. 3) Setup de cuenta: creación de mail corporativo Glofy y acceso a herramientas internas. 4) Welcome Call con Glofy: llamada con el equipo de People para repasar procesos, canales de comunicación y expectativas. 5) Onboarding con el cliente: el cliente da acceso a su entorno, herramientas y repositorios. En el primer día, People se contacta para confirmar accesos y conexión con el cliente.
+
+CONTACTOS: People/RRHH: rrhh@glofy.co | WhatsApp: +54 9 341 652-4523. Seguridad e incidentes: security@glofy.co. Referidos: referidos@glofy.co (copia a recruitment@glofy.co).
+
+LINKS: Glofy Hub: https://docs.glofy.co/glofyhub | Seguridad: https://docs.glofy.co/politicadeseguridad | Uso de Activos: https://docs.glofy.co/usodeactivos | Equipo Propio: https://docs.glofy.co/usodeactivos-propios | How Glofy Works: https://docs.glofy.co/how-works | Welcome Call: https://docs.glofy.co/welcomecall | Manual PyP: https://docs.glofy.co/manual`;
+
+const SYSTEM_PROMPT_EN = `You are the Glofy Onboarding Assistant — a friendly, direct, and knowledgeable guide for new Glofers (remote tech professionals assigned by Glofy to global companies).
+
+Answer questions about Glofy's policies, procedures, tools, and work life. Tone: experienced senior colleague, professional but approachable.
+
+RULES: Always respond in English. If unsure about something specific, refer to the People team (rrhh@glofy.co | WhatsApp: +54 9 341 652-4523). Do not invent specifics. Use short paragraphs and bullet points. Include links when citing docs. No filler phrases. Do not use em dashes (—) in your responses; use colons or commas instead.
+
+GLOFY KNOWLEDGE BASE:
+
+ABOUT GLOFY: Staff Augmentation IT company connecting senior Latin American talent with global companies. Glofers are independent contractors who work day-to-day with the client, but their contractual and administrative relationship is with Glofy.
+
+WORKING HOURS: Monday to Friday, 8 hours/day per agreement. Notify HR in advance for schedule changes. If you need to be absent unexpectedly: notify the client and People immediately. If the absence exceeds 30 minutes, coordinate recovery time. Technical problems (internet, power, equipment): notify People and the client immediately.
+
+TIMETRACKER: Use GlofyHR to log hours. Log all daily tasks in one block before Friday. Set a reminder for the last business day of the month. If there are discrepancies with the client's records, Glofy may request the client's timetracker.
+
+OVERTIME: Only recognized if pre-approved by the client and notified to Glofy with documentation. Send an email to rrhh@glofy.co with the client's approval and log them in GlofyHR with the detail "Horas extra realizadas: (quantity)".
+
+LEAVE:
+- Day Off (unpaid): request 15 days in advance to rrhh@glofy.co, wait for Glofy pre-approval, forward to client copying People, then forward client approval back to rrhh@glofy.co. Available after 3 months in the assignment.
+- Holidays: client country's calendar applies. List available in GlofyHR under "Documents".
+- Sick days: up to 5 paid business days/year. Notify People and client immediately. Send medical certificate to rrhh@glofy.co within 48 business hours of returning.
+- PTOs: available after 1 year. Valid for 1 year, non-cumulative. Request 15 days in advance; requires approval from Glofy and the client.
+
+MEETINGS: Weekly 1:1s with People within working hours, mandatory. Update Form completed every Thursday.
+
+PAYMENTS: Schedule specified in your Service Agreement. Argentine holidays may affect payment dates. To change payment method: email rrhh@glofy.co with subject "Cambio de Billetera virtual / Cuenta de cobro - [Your full name]". USD payments: Wise or Payoneer recommended.
+
+BENEFITS (active from day one): Wellness (Wellhub or equivalent bonus), Bonda discounts, monthly Health Bonus, sponsored training, referral program (reward if referred person joins and stays 1 month; send to referidos@glofy.co cc recruitment@glofy.co), welcome kit delivered to home.
+
+LINKEDIN: Employer must be listed as Glofy, not the client. You can mention the client in the description: "Assigned to [client] through Glofy, working as [role]". Non-compliance may result in required profile adjustments.
+
+CONDUCT: Respect all people, maintain confidentiality, use resources responsibly, act in good faith. Sanctions range from written warning to termination. You have 30 days to contest a sanction.
+
+SECURITY (ISO/IEC 27001:2022): Always use secure channels (VPN, HTTPS, corporate email). Authorized software only. No transferring info through unauthorized channels. Public Wi-Fi only with VPN. Clean desk policy. Disk encryption and auto screen lock required. Incidents: report to security@glofy.co, subject "Soporte Tecnico - [Your Name]". Reports are confidential and generate no sanctions.
+
+GLOFY EQUIPMENT: Confirm receipt by email, keep packaging. Set up with a new dedicated work user account. Prohibited: personal accounts, unauthorized software, lending the device. Enable strong password and 2FA. Loss or theft: report immediately to rrhh@glofy.co. Do not modify without authorization. For failures: email rrhh@glofy.co, subject "Soporte Tecnico - [Your Name]". Before returning: delete all local files, history, cache, saved passwords, and work apps.
+
+BYOD: Individual credentials, never share them. Do not download confidential info to unauthorized devices. No public Wi-Fi without VPN.
+
+GLOFYHR ISSUES: Email rrhh@glofy.co, subject "ISSUE GLOFYHR - [Your Full Name]". Include description, date/time, reproduction steps, screenshots, browser and OS. State urgency: High / Medium / Low. Before reporting try: Ctrl+F5, incognito window, clear cache, different browser.
+
+PERSONAL DATA: Update address, ID, phone or personal email by emailing rrhh@glofy.co. If changing location temporarily, notify People in advance.
+
+CONTACTS: People/HR: rrhh@glofy.co | WhatsApp: +54 9 341 652-4523. Security: security@glofy.co. Referrals: referidos@glofy.co (cc recruitment@glofy.co).
+
+ONBOARDING (5 steps): 1) Formal offer, 2) Digital signature and documentation, 3) Account and corporate email setup, 4) Welcome Call with People, 5) Client onboarding. On day one, People contacts you to confirm access.
+
+LINKS: Glofy Hub: https://docs.glofy.co/glofyhub | Security Policy: https://docs.glofy.co/politicadeseguridad | Asset Use: https://docs.glofy.co/usodeactivos | Own Device: https://docs.glofy.co/usodeactivos-propios | How Glofy Works: https://docs.glofy.co/how-works | Welcome Call: https://docs.glofy.co/welcomecall | Manual: https://docs.glofy.co/manual`;
+
+// ── State ─────────────────────────────────────────────────────
+let history = [];
+let apiKey = localStorage.getItem('glofy_api_key') || '';
+let lang = 'es';
+let T = TRANSLATIONS.es;
+
+// ── Init ──────────────────────────────────────────────────────
+function init() {
+  if (apiKey) document.getElementById('api-banner').style.display = 'none';
+  document.querySelectorAll('.welcome-chip').forEach(chip => {
+    chip.addEventListener('mousemove', e => {
+      const r = chip.getBoundingClientRect();
+      chip.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      chip.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+}
+
+// ── i18n ──────────────────────────────────────────────────────
+function setLang(l, btn) {
+  lang = l;
+  T = TRANSLATIONS[l];
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Static UI strings
+  const s = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  const a = (id, attr, val) => { const el = document.getElementById(id); if (el) el[attr] = val; };
+
+  s('header-title',  T.headerTitle);
+  s('header-sub',    T.headerSub);
+  s('label-docs',    T.labelDocs);
+  s('label-faq',     T.labelFaq);
+  s('contact-title', T.contactTitle);
+  s('status-label',  T.statusLabel);
+  s('welcome-title', T.welcomeTitle);
+  s('welcome-desc',  T.welcomeDesc);
+  s('api-save-btn',  T.apiSave);
+  s('input-hint',    T.inputHint);
+  a('api-key-input', 'placeholder', T.apiPlaceholder);
+  a('user-input',    'placeholder', T.inputPlaceholder);
+
+  // Doc link labels
+  document.querySelectorAll('.doc-link-label').forEach(el => {
+    el.textContent = el.getAttribute(`data-${l}`);
+  });
+  T.chips.forEach((c, i) => {
+    s(`chip-${i}-label`, c.label);
+    s(`chip-${i}-sub`,   c.sub);
+  });
+
+  // Quick chips
+  T.qchips.forEach((c, i) => {
+    s(`qchip-${i}-label`, c.label);
+  });
+}
+
+// ── API key ───────────────────────────────────────────────────
+function saveKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (k) {
+    apiKey = k;
+    localStorage.setItem('glofy_api_key', k);
+    document.getElementById('api-banner').style.display = 'none';
+  }
+}
+
+// ── Input helpers ─────────────────────────────────────────────
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 130) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+// ── Welcome screen ────────────────────────────────────────────
+function hideWelcome() {
+  const w = document.getElementById('welcome-screen');
+  if (w) {
+    w.style.opacity = '0';
+    w.style.transform = 'scale(0.97)';
+    w.style.transition = 'opacity 0.2s, transform 0.2s';
+    setTimeout(() => w.remove(), 200);
+  }
+}
+
+function sendWelcome(text) { hideWelcome(); setTimeout(() => sendMessageText(text), 150); }
+function sendQuick(text)   { hideWelcome(); setTimeout(() => sendMessageText(text), 150); }
+
+// ── Send ──────────────────────────────────────────────────────
+function sendMessage() {
+  const el = document.getElementById('user-input');
+  const t = el.value.trim();
+  if (!t) return;
+  el.value = ''; el.style.height = 'auto';
+  hideWelcome();
+  sendMessageText(t);
+}
+
+// ── Markdown renderer ─────────────────────────────────────────
+function md(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/^#{1,3} (.+)$/gm,'<strong>$1</strong>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
+    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+    .split(/\n\n+/)
+    .map(p => p.trim().startsWith('<') ? p : `<p>${p.replace(/\n/g,' ')}</p>`)
+    .join('');
+}
+
+// ── Append message ────────────────────────────────────────────
+function appendMsg(role, content) {
+  const c = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}`;
+
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.textContent = role === 'assistant' ? '🤖' : (lang === 'en' ? 'ME' : 'YO');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = md(content);
+
+  wrap.appendChild(av);
+  wrap.appendChild(bubble);
+  c.appendChild(wrap);
+  c.scrollTop = c.scrollHeight;
+}
+
+// ── Typing indicator ──────────────────────────────────────────
+function showTyping() {
+  const c = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'typing-wrap'; wrap.id = 'typing-wrap';
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.style.cssText = 'background:radial-gradient(circle at 35% 35%,rgba(206,255,0,0.2),rgba(206,255,0,0.04));border:1px solid rgba(206,255,0,0.2);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;';
+  av.textContent = '🤖';
+  const ind = document.createElement('div');
+  ind.className = 'typing-indicator';
+  ind.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  wrap.appendChild(av); wrap.appendChild(ind);
+  c.appendChild(wrap); c.scrollTop = c.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-wrap');
+  if (t) t.remove();
+}
+
+// ── API call ──────────────────────────────────────────────────
+async function sendMessageText(text) {
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  appendMsg('user', text);
+  history.push({ role: 'user', content: text });
+  showTyping();
+
+  if (!apiKey) {
+    removeTyping();
+    appendMsg('assistant', T.noApiKey);
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    const sys = lang === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_ES;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1024, system: sys, messages: history })
+    });
+    removeTyping();
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error?.message || `Error ${res.status}`);
+    }
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || (lang === 'en' ? 'No response received.' : 'Sin respuesta recibida.');
+    history.push({ role: 'assistant', content: reply });
+    appendMsg('assistant', reply);
+  } catch (err) {
+    removeTyping();
+    appendMsg('assistant', T.errorMsg(err.message));
+  }
+  btn.disabled = false;
+}
+
+init();
+</script>
+</body>
+</html>
