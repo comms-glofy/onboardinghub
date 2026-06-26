@@ -149,6 +149,32 @@ body::before {
   background: var(--surface3);
   border-color: var(--border-lime);
 }
+.glofyhr-link {
+  border: 1px solid rgba(206,255,0,0.12);
+  background: rgba(206,255,0,0.03);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 2px;
+}
+.glofyhr-link:hover {
+  border-color: rgba(206,255,0,0.3);
+  background: rgba(206,255,0,0.07);
+}
+.glofyhr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.glofyhr-sub {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.01em;
+  transition: color 0.15s;
+}
+.glofyhr-link:hover .glofyhr-sub {
+  color: var(--text-muted);
+}
 
 /* Quick chips */
 .quick-chip {
@@ -562,14 +588,67 @@ body::before {
 .divider { height: 1px; background: var(--border); margin: 4px 0; }
 
 /* ─── Responsive ─── */
+/* ─── Hamburger button ─── */
+.hamburger {
+  display: none;
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+.hamburger:hover { border-color: var(--border-lime); background: var(--surface2); }
+.hamburger span {
+  display: block;
+  width: 16px; height: 1.5px;
+  background: var(--text-muted);
+  border-radius: 2px;
+  transition: all 0.2s var(--ease);
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ─── Mobile drawer overlay ─── */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease;
+}
+.sidebar-overlay.visible { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 @media (max-width: 700px) {
   .layout { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
+  .hamburger { display: flex; }
+  .sidebar {
+    display: flex !important;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 280px;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.28s var(--ease);
+    box-shadow: 4px 0 32px rgba(0,0,0,0.5);
+  }
+  .sidebar.open { transform: translateX(0); }
   .welcome-chips { grid-template-columns: 1fr; }
   .messages { padding: 20px 16px; }
   .input-section { padding: 10px 16px 16px; }
-  .chat-header { padding: 14px 16px; }
+  .chat-header { padding: 14px 16px; gap: 10px; }
   .header-badge { display: none; }
+  .view-tabs { display: none; }
+  .header-info h2 { font-size: 13px; }
+  .header-info p { display: none; }
 }
 </style>
 </head>
@@ -591,6 +670,15 @@ body::before {
           <span style="font-size:15px;font-weight:700;color:var(--text)">Glofy</span>
         </div>
       </div>
+
+      <div class="section-label" id="label-platform">Plataforma</div>
+      <a class="doc-link glofyhr-link" href="https://glofy.co/login" target="_blank">
+        <span class="doc-icon-wrap">🖥️</span>
+        <div class="glofyhr-info">
+          <span class="doc-link-label" data-es="GlofyHR" data-en="GlofyHR">GlofyHR</span>
+          <span class="glofyhr-sub" data-es="Timetracker, feriados y documentación de tu asignación" data-en="Timetracker, holidays and assignment documentation">Timetracker, feriados y documentación de tu asignación</span>
+        </div>
+      </a>
 
       <div class="section-label" id="label-docs">Documentación</div>
 
@@ -661,7 +749,10 @@ body::before {
   <main class="chat-area">
 
     <div class="chat-header">
-      <div class="header-avatar">🤖</div>
+      <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="header-avatar" id="header-avatar">🤖</div>
       <div class="header-info">
         <h2 id="header-title">Asistente de Onboarding</h2>
         <p id="header-sub">Preguntame cualquier cosa sobre tus primeras semanas como Glofer</p>
@@ -721,6 +812,8 @@ body::before {
   </main>
 </div>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <script>
 // ── Translations ──────────────────────────────────────────────
 const TRANSLATIONS = {
@@ -729,6 +822,7 @@ const TRANSLATIONS = {
     headerSub: 'Preguntame cualquier cosa sobre tus primeras semanas como Glofer',
     welcomeTitle: '¡Bienvenido/a a Glofy!',
     welcomeDesc: 'Soy tu asistente de onboarding. Estoy acá para ayudarte a navegar tus primeras semanas: políticas, herramientas, procesos y cualquier duda del día a día.',
+    labelPlatform: 'Plataforma',
     labelDocs: 'Documentación',
     labelFaq: 'Preguntas frecuentes',
     contactTitle: 'Contacto People',
@@ -756,6 +850,7 @@ const TRANSLATIONS = {
     headerSub: 'Ask me anything about your first weeks as a Glofer',
     welcomeTitle: 'Welcome to Glofy!',
     welcomeDesc: 'I\'m your onboarding assistant. I\'m here to help you navigate your first weeks: policies, tools, processes and any day-to-day questions you might have.',
+    labelPlatform: 'Platform',
     labelDocs: 'Documentation',
     labelFaq: 'Quick questions',
     contactTitle: 'Contact People',
@@ -932,6 +1027,7 @@ function setLang(l, btn) {
 
   s('header-title',  T.headerTitle);
   s('header-sub',    T.headerSub);
+  s('label-platform', T.labelPlatform);
   s('label-docs',    T.labelDocs);
   s('label-faq',     T.labelFaq);
   s('contact-title', T.contactTitle);
@@ -944,7 +1040,7 @@ function setLang(l, btn) {
   a('user-input',    'placeholder', T.inputPlaceholder);
 
   // Doc link labels
-  document.querySelectorAll('.doc-link-label').forEach(el => {
+  document.querySelectorAll('.doc-link-label, .glofyhr-sub').forEach(el => {
     el.textContent = el.getAttribute(`data-${l}`);
   });
   T.chips.forEach((c, i) => {
@@ -1079,9 +1175,37 @@ async function sendMessageText(text) {
   btn.disabled = false;
 }
 
+// ── Mobile sidebar ────────────────────────────────────────────
+function toggleSidebar() {
+  const sidebar  = document.querySelector('.sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  const btn      = document.getElementById('hamburger-btn');
+  const isOpen   = sidebar.classList.contains('open');
+  if (isOpen) {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+    btn.classList.remove('open');
+    document.body.style.overflow = '';
+  } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('visible');
+    btn.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// Close sidebar on doc link click (mobile)
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.doc-link, .quick-chip').forEach(el => {
+    el.addEventListener('click', () => {
+      if (window.innerWidth <= 700) toggleSidebar();
+    });
+  });
+});
+
+
 init();
 </script>
 </body>
 </html>
-
 
