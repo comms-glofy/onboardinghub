@@ -578,7 +578,7 @@ body::before {
 
 .input-hint {
   font-size: 10.5px; font-weight: 400;
-  color: var(--text-subtle);
+  color: #ffffff;
   margin-top: 9px; padding: 0 2px;
   letter-spacing: 0.01em;
 }
@@ -1027,6 +1027,7 @@ body::before {
         </button>
       </div>
       <p class="input-hint" id="input-hint">El asistente tiene acceso a la documentación oficial de Glofy. Para urgencias, contactá a People directamente.</p>
+      <p class="input-hint" id="input-disclaimer" style="margin-top:4px;color:rgba(255,255,255,0.65);">Este asistente utiliza inteligencia artificial de terceros y puede cometer errores. Verificá la información importante con el equipo de People.</p>
     </div>
 
   </main>
@@ -1049,6 +1050,7 @@ const TRANSLATIONS = {
     statusLabel: 'Asistente en línea',
     inputPlaceholder: 'Escribí tu pregunta acá…',
     inputHint: 'El asistente tiene acceso a la documentación oficial de Glofy. Para urgencias, contactá a People directamente.',
+    inputDisclaimer: 'Este asistente utiliza inteligencia artificial de terceros y puede cometer errores. Verificá la información importante con el equipo de People.',
     errorMsg: (m) => `Algo salió mal: ${m}`,
     teamTitle: 'El equipo Glofy',
     teamSub: 'Las personas que acompañan tu proceso de incorporación y asignación',
@@ -1082,6 +1084,7 @@ const TRANSLATIONS = {
     statusLabel: 'Assistant online',
     inputPlaceholder: 'Type your question here…',
     inputHint: 'The assistant has access to Glofy\'s official documentation. For urgent matters, contact People directly.',
+    inputDisclaimer: 'This assistant uses third-party AI and may make mistakes. Always verify important information with the People team.',
     errorMsg: (m) => `Something went wrong: ${m}`,
     teamTitle: 'The Glofy team',
     teamSub: 'The people supporting your onboarding and assignment',
@@ -1294,6 +1297,7 @@ function setLang(l, btn) {
   s('input-hint',    T.inputHint);
   a('api-key-input', 'placeholder', T.apiPlaceholder);
   a('user-input',    'placeholder', T.inputPlaceholder);
+  s('input-disclaimer', T.inputDisclaimer);
 
   // Tab labels
   document.querySelectorAll('.view-tab').forEach(btn => {
