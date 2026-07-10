@@ -788,6 +788,9 @@ body::before {
       <a class="doc-link" href="https://docs.glofy.co/manual" target="_blank">
         <span class="doc-icon-wrap">📋</span> <span class="doc-link-label" data-es="Manual PyP" data-en="Policies Manual">Manual PyP</span>
       </a>
+      <a class="doc-link" href="https://docs.glofy.co/manual-fix" target="_blank">
+        <span class="doc-icon-wrap">📋</span> <span class="doc-link-label" data-es="Manual PyP Fix" data-en="Policies Manual Fix">Manual PyP Fix</span>
+      </a>
       <a class="doc-link" href="https://docs.glofy.co/how-works" target="_blank">
         <span class="doc-icon-wrap">⚙️</span> <span class="doc-link-label" data-es="Así trabajamos en Glofy" data-en="How Glofy Works">How Glofy Works</span>
       </a>
@@ -1194,6 +1197,22 @@ Tu equipo en el cliente: Como Glofer operás bajo la modalidad de Staff Augmenta
 
 CONTACTOS: People/RRHH: rrhh@glofy.co | WhatsApp: +54 9 341 652-4523. Seguridad e incidentes: security@glofy.co. Referidos: referidos@glofy.co (con copia a recruitment@glofy.co).
 
+ASIGNACIONES FIX: Los siguientes puntos aplican únicamente a Glofers con modalidad de asignación FIX (honorario mensual fijo). Si no sabés tu modalidad, consultá tu contrato o escribí a rrhh@glofy.co.
+
+JORNADA FIX: Tu honorario mensual es fijo e independiente de la cantidad exacta de horas registradas, siempre que cumplas con la jornada acordada de 8 horas diarias de lunes a viernes. Durante ese horario es tu responsabilidad estar disponible para cualquier contacto del cliente o del equipo Glofy.
+
+HORAS EXTRA FIX: Toda hora trabajada fuera del horario acordado debe ser informada a Glofy. Procedimiento: enviá un mail a rrhh@glofy.co con asunto "Horas extra + Nombre y Apellido", indicando fecha, cantidad de horas y adjuntando captura de la aprobación del cliente. Luego registralo en GlofyHR en el bloque del día correspondiente con descripción "Horas extra realizadas: [cantidad de horas]". Las horas extra no informadas en tiempo y forma no serán contempladas para compensación ni recuperación. ¿Cuándo se reconocen económicamente? Solo en dos casos: cuando implican trabajo durante un fin de semana (independientemente de la cantidad), o cuando implican un día completo adicional fuera de la jornada habitual. En ambos casos deben haber sido solicitadas o aprobadas por escrito por el cliente. Las extensiones menores dentro de una jornada normal (1 o 2 horas adicionales entre semana) no generan compensación económica; la única vía es la recuperación coordinada con el cliente dentro del mismo mes, pero igualmente deben informarse a People.
+
+RECUPERO DE HORAS FIX: Si el cliente otorga permiso para ausentarte parcial o totalmente, demostrá predisposición para recuperar el tiempo, siempre en acuerdo con el equipo. Pasos: 1) Coordiná con tu líder y enviá a rrhh@glofy.co la validación escrita del cliente. 2) Registrá solo las horas efectivamente trabajadas ese día en el timetracker. Ejemplo: si tu horario es 9-17 y saliste a las 16, registrá 7 horas. En la descripción agregá "Salida anticipada/Jornada reducida el [fecha], [tiempo] recuperado correspondiente a [fecha]". 3) Si recuperás en otro día, cargá las horas adicionales ese día. Toda recuperación debe notificarse a People.
+
+FERIADOS FIX: Los feriados del calendario aprobado por el cliente están incluidos en tu rate mensual, no generan descuento ni requieren recuperación. Simplemente no prestás servicios ese día. Glofy te provee el calendario al inicio de la asignación. Registro en GlofyHR: usá el botón Holiday Day Off; el sistema contabilizará 0 horas automáticamente.
+
+TIME OFF DAYS FIX: Los días off son no remunerados; un día off genera un descuento de 1/20 de tu rate mensual (detallado en tu Acuerdo de Prestación de Servicios Independiente). Requisitos: deben haber transcurrido al menos 3 meses desde el inicio de la asignación (excepto días informados durante el proceso de selección), y la solicitud debe hacerse con al menos 15 días de anticipación. Paso a paso: 1) Enviá mail a rrhh@glofy.co con asunto "Solicitud Time Off Day + Nombre", especificando las fechas. 2) Esperá la pre-aprobación de Glofy. 3) Replicá la solicitud por escrito a tu responsable del cliente. 4) Enviá captura o copiá a rrhh@glofy.co cuando el cliente apruebe. Ausencias extensas (más de 5 días hábiles consecutivos): máximo 15 días hábiles totales por año calendario, máximo 2 semanas consecutivas, no acumulables. Registro en GlofyHR: usá el botón Time Off Day, cargalo antes de iniciar la ausencia.
+
+HEALTH DAY OFF FIX: Glofy cubre hasta 5 días hábiles de licencia remunerada por enfermedad por año. Paso a paso: 1) Apenas no puedas continuar tu jornada por salud, avisá de inmediato a tu HR Coordinator e informá a tu responsable del cliente copiando a rrhh@glofy.co. 2) Enviá el certificado médico a rrhh@glofy.co dentro de las 48 horas hábiles posteriores a tu reincorporación; si no lo hacés en ese plazo, el día puede ser considerado inasistencia injustificada. 3) Para licencias médicas planificadas (como cirugías programadas), notificá con anticipación a People. Registro en GlofyHR: usá el botón Sick Day Off.
+
+MANUAL DE POLITICAS Y PROCEDIMIENTOS FIX: https://docs.glofy.co/manual-fix
+
 LINKS: Glofy Hub: https://docs.glofy.co/glofyhub | Seguridad: https://docs.glofy.co/politicadeseguridad | Uso de Activos: https://docs.glofy.co/usodeactivos | Equipo Propio: https://docs.glofy.co/usodeactivos-propios | How Glofy Works: https://docs.glofy.co/how-works | Welcome Call: https://docs.glofy.co/welcomecall | Manual PyP: https://docs.glofy.co/manual`;
 
 const SYSTEM_PROMPT_EN = `You are the Glofy Onboarding Assistant — a friendly, direct, and knowledgeable guide for new Glofers (remote tech professionals assigned by Glofy to global companies).
@@ -1253,6 +1272,22 @@ Your client-side team: As a Glofer you operate under a Staff Augmentation model,
 CONTACTS: People/HR: rrhh@glofy.co | WhatsApp: +54 9 341 652-4523. Security: security@glofy.co. Referrals: referidos@glofy.co (cc recruitment@glofy.co).
 
 ONBOARDING (5 steps): 1) Formal offer, 2) Digital signature and documentation, 3) Account and corporate email setup, 4) Welcome Call with People, 5) Client onboarding. On day one, People contacts you to confirm access.
+
+FIX ASSIGNMENTS: The following applies only to Glofers on a FIX assignment model (fixed monthly fee). If you're unsure of your model, check your contract or write to rrhh@glofy.co.
+
+FIX WORKING HOURS: Your monthly fee is fixed regardless of the exact number of hours logged, as long as you fulfill the agreed 8-hour daily schedule Monday to Friday. During those hours you must be available for any contact from the client or Glofy team.
+
+FIX OVERTIME: Any hours worked outside the agreed schedule must be reported to Glofy. Process: send an email to rrhh@glofy.co with subject "Horas extra + Full Name", including date, number of hours, and a screenshot of client approval. Then log them in GlofyHR on the corresponding day with description "Horas extra realizadas: [number of hours]". Unreported overtime will not be eligible for compensation or recovery. Overtime is only compensated economically in two cases: work on a weekend (regardless of hours), or a full additional day outside the regular schedule. Both must have been requested or approved in writing by the client. Minor extensions within a normal workday (1–2 extra hours on a weekday) do not generate economic compensation; the only option is coordinated recovery with the client within the same month, but they must still be reported to People.
+
+FIX HOUR RECOVERY: If the client grants permission to be absent partially or fully, show willingness to recover the time, always in agreement with your team. Steps: 1) Coordinate with your lead and send written client validation to rrhh@glofy.co. 2) Log only the hours actually worked that day. Example: if your schedule is 9–17 and you left at 16, log 7 hours. In the description add "Early departure/Reduced schedule on [date], [time] recovered on [date]". 3) If you recover on another day, log the extra hours on that day. All recovery must be reported to People.
+
+FIX HOLIDAYS: Holidays in the client's approved calendar are included in your monthly rate — no deduction or recovery required. Simply don't work that day. Glofy provides the calendar at the start of your assignment. Log in GlofyHR using the Holiday Day Off button; the system will automatically count 0 hours.
+
+FIX TIME OFF DAYS: Days off are unpaid — one day off generates a deduction of 1/20 of your monthly rate (detailed in your Independent Services Agreement). Requirements: at least 3 months must have passed since the start of the assignment (except days informed during the selection process), and requests must be made at least 15 days in advance. Steps: 1) Email rrhh@glofy.co with subject "Solicitud Time Off Day + Name", specifying the dates. 2) Wait for Glofy pre-approval. 3) Forward the request in writing to your client lead. 4) Send a screenshot or CC rrhh@glofy.co when the client approves. Extended absences (over 5 consecutive business days): maximum 15 business days per calendar year, maximum 2 consecutive weeks, non-cumulative. Log in GlofyHR using the Time Off Day button before the absence begins.
+
+FIX HEALTH DAY OFF: Glofy covers up to 5 paid sick days per year. Steps: 1) As soon as you cannot continue your workday due to health, notify your HR Coordinator immediately and inform your client lead CC'ing rrhh@glofy.co. 2) Submit the medical certificate to rrhh@glofy.co within 48 business hours of returning; if not submitted in time, the day may be considered an unjustified absence. 3) For planned medical leave (e.g. scheduled surgery), notify People in advance. Log in GlofyHR using the Sick Day Off button.
+
+FIX POLICIES MANUAL: https://docs.glofy.co/manual-fix
 
 LINKS: Glofy Hub: https://docs.glofy.co/glofyhub | Security Policy: https://docs.glofy.co/politicadeseguridad | Asset Use: https://docs.glofy.co/usodeactivos | Own Device: https://docs.glofy.co/usodeactivos-propios | How Glofy Works: https://docs.glofy.co/how-works | Welcome Call: https://docs.glofy.co/welcomecall | Manual: https://docs.glofy.co/manual`;
 
@@ -1525,4 +1560,3 @@ init();
 </script>
 </body>
 </html>
-
